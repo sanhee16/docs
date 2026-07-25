@@ -11,7 +11,14 @@
       main { box-sizing: border-box; max-width: 420px; padding: 32px 24px; text-align: center; width: 100%; }
       h1 { font-size: 24px; margin: 0 0 12px; }
       p { color: #5f6368; line-height: 1.6; margin: 0 0 24px; }
-      a { background: #3d6df2; border-radius: 12px; color: #fff; display: block; font-weight: 700; padding: 15px 20px; text-decoration: none; }
+      a { border-radius: 12px; display: block; font-weight: 700; padding: 15px 20px; text-decoration: none; }
+      #open-app { background: #3d6df2; color: #fff; }
+      .store-links { align-items: center; display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 12px; }
+      .store-links a { align-items: center; box-sizing: border-box; display: flex; height: 56px; justify-content: center; padding: 0; width: 176px; }
+      .store-links img { height: 22px; margin-right: 9px; width: 22px; }
+      #open-play-store { background: #fff; border: 1px solid #dadce0; color: #3c4043; }
+      #open-app-store { background: #000; border: 1px solid #000; color: #fff; }
+      #open-app-store img { filter: invert(1); }
       small { color: #80868b; display: block; line-height: 1.5; margin-top: 18px; }
     </style>
   </head>
@@ -20,6 +27,16 @@
       <h1 id="title">TriPlan 여행 초대</h1>
       <p id="description">TriPlan 앱에서 여행방을 여는 중이에요.</p>
       <a id="open-app" href="#">앱에서 초대 열기</a>
+      <div class="store-links">
+        <a id="open-play-store" href="https://play.google.com/store/apps/details?id=com.sandy.triplan" aria-label="Google Play">
+          <img src="https://cdn.simpleicons.org/googleplay/202124" alt="" />
+          Google Play
+        </a>
+        <a id="open-app-store" href="https://apps.apple.com/app/id6766812806" aria-label="App Store">
+          <img src="https://cdn.simpleicons.org/appstore/202124" alt="" />
+          App Store
+        </a>
+      </div>
       <small id="help">앱이 설치되어 있지 않다면 TriPlan을 설치한 뒤 이 링크를 다시 열어 주세요.</small>
     </main>
     <script>
