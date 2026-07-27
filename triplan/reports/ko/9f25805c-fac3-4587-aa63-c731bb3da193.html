@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>삿포로 · 여행 아틀라스</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link
+		href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,900&family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap"
+		rel="stylesheet">
+	<style>
+		:root {
+			--paper: #F2ECDD;
+			--paper-2: #EAE2CC;
+			--ink: #16263A;
+			--ink-soft: #44525F;
+			--gray: #888b8e;
+			--line: #CDC3A8;
+			--teal: #0F7A78;
+			--amber: #C77D2A;
+			--coral: #C84B31;
+
+			/* 기온 등급 색 (weather.py의 enum과 1:1 대응) */
+			--t-freezing: #4E73A8;
+			--t-cold: #6BA0C7;
+			--t-chilly: #3E9AA0;
+			--t-mild: #5BA45F;
+			--t-warm: #C77D2A;
+			--t-hot: #C84B31;
+
+			--maxw: 940px;
+		}
+
+		* {
+			box-sizing: border-box;
+		}
+
+		html {
+			scroll-behavior: smooth;
+		}
+
+		body {
+			margin: 0;
+			background-color: var(--paper);
+			/* 종이 질감: 미세한 도트 + 가장자리 비네팅으로 평평한 크림을 탈피 */
+			background-image:
+				radial-gradient(circle at 50% 0%, rgba(255, 255, 255, .5), transparent 60%),
+				radial-gradient(rgba(22, 38, 58, .035) 1px, transparent 1px);
+			background-size: 100% 100%, 22px 22px;
+			color: var(--ink);
+			font-family: "Inter", system-ui, sans-serif;
+			line-height: 1.6;
+			-webkit-font-smoothing: antialiased;
+		}
+
+		.wrap {
+			max-width: var(--maxw);
+			margin: 0 auto;
+			padding: 0 24px;
+		}
+
+		/* ---------- 공통 라벨/구분선 ---------- */
+		.eyebrow {
+			font-family: "Space Mono", monospace;
+			font-size: .72rem;
+			letter-spacing: .28em;
+			text-transform: uppercase;
+			color: var(--teal);
+			margin: 0;
+		}
+
+		.rule {
+			height: 1px;
+			background: repeating-linear-gradient(90deg, var(--line) 0 8px, transparent 8px 14px);
+			border: 0;
+		}
+
+		/* ---------- 히어로 ---------- */
+		.hero {
+			padding: 88px 0 40px;
+		}
+
+		.hero .dateline {
+			display: flex;
+			align-items: center;
+			gap: 14px;
+			margin-bottom: 26px;
+		}
+
+		.hero .dateline .line {
+			flex: 1;
+			height: 1px;
+			background: var(--line);
+		}
+
+		.city-name {
+			font-family: "Fraunces", serif;
+			font-weight: 900;
+			font-size: clamp(3.2rem, 11vw, 7rem);
+			line-height: .92;
+			letter-spacing: -.02em;
+			margin: 0;
+		}
+
+		.tagline {
+			font-family: "Fraunces", serif;
+			font-weight: 400;
+			font-style: italic;
+			font-size: clamp(1.15rem, 3.2vw, 1.6rem);
+			color: var(--ink-soft);
+			max-width: 36ch;
+			margin: 22px 0 0;
+		}
+
+		/* ---------- 본문 단락 (여행지 설명) ---------- */
+		.sections {
+			padding: 30px 0 20px;
+		}
+
+		.stop {
+			padding: 46px 0;
+			border-top: 1px solid var(--line);
+		}
+
+		.stop:first-child {
+			border-top: 0;
+		}
+
+		.stop .stop-no {
+			font-family: "Space Mono", monospace;
+			font-size: .78rem;
+			font-weight: 700;
+			color: var(--coral);
+			letter-spacing: .1em;
+		}
+
+		.stop h2 {
+			font-family: "Fraunces", serif;
+			font-weight: 600;
+			font-size: clamp(1.7rem, 4.4vw, 2.5rem);
+			line-height: 1.1;
+			letter-spacing: -.01em;
+			margin: 6px 0 18px;
+		}
+
+		.stop p {
+			font-size: 1.05rem;
+			color: var(--ink-soft);
+			margin: 0;
+			max-width: 62ch;
+		}
+
+		.stop p+p {
+			margin-top: 1.05em;
+		}
+
+		.stop figure {
+			margin: 0 0 24px;
+		}
+
+		.stop figure img {
+			display: block;
+			width: 100%;
+			height: 320px;
+			object-fit: cover;
+		}
+
+		/* 제목 없는 단락(인터루드): 좌측 액센트 룰만 */
+		.stop.interlude {
+			border-top: 0;
+			padding: 14px 0 14px;
+		}
+
+		.stop.interlude p {
+			border-left: 3px solid var(--teal);
+			padding-left: 18px;
+			font-family: "Fraunces", serif;
+			font-style: italic;
+			font-size: 1.15rem;
+			color: var(--ink);
+			max-width: 56ch;
+		}
+
+		.stop.interlude p+p {
+			margin-top: 1em;
+		}
+
+		/* ---------- 카드 영역 ---------- */
+		.cards {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			gap: 26px;
+			padding: 50px 0 96px;
+		}
+
+		.card {
+			background: var(--paper-2);
+			border: 1px solid var(--ink);
+			box-shadow: 7px 7px 0 rgba(22, 38, 58, .14);
+			padding: 28px 26px;
+		}
+
+		.card-head {
+			display: flex;
+			align-items: baseline;
+			justify-content: space-between;
+			gap: 10px;
+			margin-bottom: 20px;
+		}
+
+		.card-head h3 {
+			font-family: "Inter", sans-serif;
+			font-weight: 700;
+			font-size: 1.3rem;
+			letter-spacing: -.01em;
+			margin: 0;
+		}
+
+		.card-head .eyebrow {
+			font-family: "Inter", sans-serif;
+			font-variant-numeric: tabular-nums;
+			text-transform: none;
+			letter-spacing: .04em;
+			font-size: .78rem;
+			color: var(--ink-soft);
+		}
+
+		/* 추천 월 리본 (1~12) */
+		.month-ribbon {
+			display: grid;
+			grid-template-columns: repeat(12, 1fr);
+			gap: 4px;
+			margin-bottom: 22px;
+		}
+
+		.month-ribbon .m {
+			font-family: "Inter", sans-serif;
+			font-variant-numeric: tabular-nums;
+			font-size: .8rem;
+			text-align: center;
+			padding: 7px 0;
+			color: var(--ink-soft);
+			border: 1px solid transparent;
+			border-radius: 2px;
+		}
+
+		.month-ribbon .m.on {
+			background: var(--ink);
+			color: var(--paper);
+			font-weight: 700;
+		}
+
+		/* 월별 날씨 행 */
+		.weather-row {
+			display: grid;
+			grid-template-columns: 46px 64px 1fr;
+			align-items: center;
+			gap: 12px;
+			padding: 11px 0;
+			border-top: 1px dashed var(--line);
+		}
+
+		.weather-row:first-of-type {
+			border-top: 0;
+		}
+
+		.weather-row .wm {
+			font-family: "Inter", sans-serif;
+			font-variant-numeric: tabular-nums;
+			font-weight: 600;
+			font-size: .92rem;
+		}
+
+		.weather-row .wt {
+			font-family: "Inter", sans-serif;
+			font-variant-numeric: tabular-nums;
+			font-weight: 600;
+			font-size: .95rem;
+			color: #fff;
+			text-align: center;
+			padding: 3px 0;
+			border-radius: 3px;
+		}
+
+		.weather-row .wo {
+			font-size: .92rem;
+			color: var(--ink-soft);
+		}
+
+		.weather-row .wo .ico {
+			margin-right: 6px;
+		}
+
+		.weather-row .wo .tier {
+			font-family: "Inter", sans-serif;
+			font-size: .74rem;
+			color: var(--ink);
+			opacity: .55;
+			margin-left: 6px;
+		}
+
+		.t-freezing {
+			background: var(--t-freezing);
+		}
+
+		.t-cold {
+			background: var(--t-cold);
+		}
+
+		.t-chilly {
+			background: var(--t-chilly);
+		}
+
+		.t-mild {
+			background: var(--t-mild);
+		}
+
+		.t-warm {
+			background: var(--t-warm);
+		}
+
+		.t-hot {
+			background: var(--t-hot);
+		}
+
+		/* 경비 카드 */
+		.budget-total {
+			font-family: "Inter", sans-serif;
+			font-variant-numeric: tabular-nums;
+			font-weight: 600;
+			font-size: 1rem;
+			color: var(--coral);
+		}
+
+		.budget-bar {
+			display: flex;
+			height: 14px;
+			width: 100%;
+			border: 1px solid var(--ink);
+			margin-bottom: 22px;
+			overflow: hidden;
+		}
+
+		.budget-bar span {
+			height: 100%;
+		}
+
+		.budget-bar span:nth-child(6n+1) {
+			background: var(--teal);
+		}
+
+		.budget-bar span:nth-child(6n+2) {
+			background: var(--amber);
+		}
+
+		.budget-bar span:nth-child(6n+3) {
+			background: var(--t-freezing);
+		}
+
+		.budget-bar span:nth-child(6n+4) {
+			background: var(--coral);
+		}
+
+		.budget-bar span:nth-child(6n+5) {
+			background: var(--t-mild);
+		}
+
+		.budget-bar span:nth-child(6n+6) {
+			background: var(--ink-soft);
+		}
+
+		.budget-row {
+			display: grid;
+			grid-template-columns: 14px 1fr auto;
+			align-items: center;
+			gap: 12px;
+			padding: 10px 0;
+			border-top: 1px dashed var(--line);
+		}
+
+		.budget-row:first-of-type {
+			border-top: 0;
+		}
+
+		.budget-row .dot {
+			width: 11px;
+			height: 11px;
+			border-radius: 50%;
+		}
+
+		.budget-row .dot:nth-child(6n+1) {
+			background: var(--teal);
+		}
+
+		.budget-row .blabel {
+			font-size: .98rem;
+		}
+
+		.budget-row .bamt {
+			font-family: "Inter", sans-serif;
+			font-variant-numeric: tabular-nums;
+			font-weight: 600;
+			font-size: .98rem;
+			text-align: right;
+		}
+
+		.budget-row .bpct {
+			font-family: "Inter", sans-serif;
+			font-variant-numeric: tabular-nums;
+			font-size: .72rem;
+			color: var(--ink-soft);
+			margin-left: 8px;
+		}
+
+		.budget-foot {
+			display: flex;
+			justify-content: space-between;
+			align-items: baseline;
+			margin-top: 16px;
+			padding-top: 16px;
+			border-top: 2px solid var(--ink);
+		}
+
+		.budget-foot .lab {
+			font-family: "Inter", sans-serif;
+			font-weight: 600;
+			letter-spacing: .02em;
+			font-size: .9rem;
+			color: var(--ink-soft);
+		}
+
+		.budget-foot .sum {
+			font-family: "Inter", sans-serif;
+			font-variant-numeric: tabular-nums;
+			font-weight: 700;
+			font-size: 1.55rem;
+		}
+
+		.budget-note {
+			font-size: .78rem;
+			color: var(--ink-soft);
+			margin: 14px 0 0;
+		}
+
+		/* 푸터 */
+		footer {
+			border-top: 1px solid var(--line);
+			padding: 16px 0;
+			font-family: "Space Mono", monospace;
+			font-size: .40rem;
+			letter-spacing: .2em;
+			color: var(--gray);
+			text-transform: uppercase;
+		}
+
+		/* ---------- 반응형 ---------- */
+		@media (max-width: 720px) {
+			.cards {
+				grid-template-columns: 1fr;
+				gap: 22px;
+			}
+
+			.hero {
+				padding: 60px 0 30px;
+			}
+
+			.month-ribbon .m {
+				font-size: .6rem;
+				padding: 6px 0;
+			}
+
+			.weather-row {
+				grid-template-columns: 40px 58px 1fr;
+				gap: 9px;
+			}
+
+			.weather-row .wo .tier {
+				display: none;
+			}
+		}
+
+		@media (prefers-reduced-motion: reduce) {
+			html {
+				scroll-behavior: auto;
+			}
+		}
+
+		/* 접근성: 키보드 포커스 */
+		a:focus-visible {
+			outline: 2px solid var(--teal);
+			outline-offset: 3px;
+		}
+	</style>
+</head>
+
+<body>
+	<main class="wrap">
+		<!-- 히어로 -->
+		<header class="hero">
+			<div class="hero-image">
+				<img src="" alt="삿포로" loading="eager"
+					onerror="this.parentElement.style.display='none'">
+			</div>
+
+			<h1 class="city-name">삿포로</h1>
+
+			
+			<p class="tagline">드넓은 라벤더 들판의 여름과 순백의 눈꽃이 덮인 겨울이 공존하는 북녘의 낭만.</p>
+			
+			</div>
+		</header>
+		<hr class="rule">
+
+		<!-- 여행지 설명 단락 -->
+		<section class="sections">
+			
+			
+			<article class="stop">
+				
+				<figure>
+					<img src="https://images.unsplash.com/photo-1741225241678-0c7f8fa07917?q=80&amp;w=1290&amp;auto=format&amp;fit=crop&amp;ixlib=rb-4.1.0&amp;ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="계절이 빚어낸 경이로운 자연 풍경" loading="lazy"
+						onerror="this.closest('figure').style.display='none'">
+				</figure>
+				
+				<div class="stop-no">STOP 01</div>
+				<h2>계절이 빚어낸 경이로운 자연 풍경</h2>
+				<p>삿포로의 여름은 후라노와 비에이의 라벤더 밭으로 대표됩니다. 7월과 8월 사이 끝없이 펼쳐진 보랏빛 꽃물결은 그 자체로 장관이며, 렌터카를 이용하거나 일일 투어 버스를 활용해 구불구불한 언덕길을 여유롭게 둘러보는 것을 추천합니다.</p><p>겨울철 삿포로는 온 세상이 하얗게 변하는 설국으로 탈바꿈합니다. 오타루 운하의 야경은 눈이 내리는 날 가장 아름다우며, 따뜻한 찻집에 앉아 운하를 바라보는 것만으로도 충분히 로맨틱한 여행이 완성됩니다.</p><p>자연을 만끽할 때는 기상 변화를 늘 주의해야 합니다. 특히 겨울철 비에이의 나무들을 보러 갈 때는 체감 온도가 매우 낮으니 방한 장비를 철저히 갖추고, 여름철에는 강한 자외선을 대비한 선글라스와 양산이 필수입니다.</p>
+			</article>
+			
+			
+			
+			<article class="stop">
+				
+				<figure>
+					<img src="https://images.unsplash.com/photo-1724365956437-1b7e1ade4cf7?q=80&amp;w=2070&amp;auto=format&amp;fit=crop&amp;ixlib=rb-4.1.0&amp;ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="미식가들의 천국, 북해도의 신선한 맛" loading="lazy"
+						onerror="this.closest('figure').style.display='none'">
+				</figure>
+				
+				<div class="stop-no">STOP 02</div>
+				<h2>미식가들의 천국, 북해도의 신선한 맛</h2>
+				<p>삿포로 여행의 핵심은 단연 해산물입니다. 니조 시장은 이른 아침부터 문을 열어 싱싱한 카이센동을 맛볼 수 있는 곳으로, 신선한 성게알과 게 요리는 현지에서만 느낄 수 있는 깊은 풍미를 자랑합니다.</p><p>쌀쌀한 날씨에 안성맞춤인 삿포로식 스프카레와 징기스칸(양고기 구이)은 놓치지 말아야 할 대표 음식입니다. 특히 유명 징기스칸 전문점은 대기가 길기로 유명하니, 오픈 시간보다 조금 일찍 도착하거나 미리 예약 가능한 식당을 찾는 지혜가 필요합니다.</p><p>현지 식당들은 대체로 예약 문화가 정착되어 있습니다. 저녁 피크 시간에는 예약 없이 방문할 경우 오래 기다려야 할 확률이 높으므로, 이동 동선에 맞춰 하루나 이틀 전 온라인 예약을 활용하는 것이 소중한 여행 시간을 아끼는 가장 좋은 방법입니다.</p>
+			</article>
+			
+			
+			
+			<article class="stop">
+				
+				<figure>
+					<img src="https://images.unsplash.com/photo-1644602470572-97458fc7e9ac?q=80&amp;w=2070&amp;auto=format&amp;fit=crop&amp;ixlib=rb-4.1.0&amp;ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="도시의 품격과 낭만적인 야경" loading="lazy"
+						onerror="this.closest('figure').style.display='none'">
+				</figure>
+				
+				<div class="stop-no">STOP 03</div>
+				<h2>도시의 품격과 낭만적인 야경</h2>
+				<p>오도리 공원은 삿포로 도심의 중심축으로, 여름에는 맥주 축제가 열리고 겨울에는 눈 축제의 무대가 되어 계절마다 완전히 다른 얼굴을 보여줍니다. TV 타워 전망대에 올라 공원과 시내 전경을 한눈에 내려다보는 동선을 가장 추천합니다.</p><p>삿포로 맥주 박물관에서 마시는 갓 추출한 맥주 한 잔은 여행의 피로를 씻어주는 최고의 청량제입니다. 박물관은 시내 중심가에서 조금 떨어져 있으니 노면 전차나 버스를 이용한 이동 경로를 미리 확인하는 것이 좋습니다.</p><p>밤이 되면 모이와야마 산 전망대에서 바라보는 삿포로의 야경은 &#39;일본의 신 3대 야경&#39;에 꼽힐 만큼 화려합니다. 로프웨이를 타고 올라가는 과정 자체가 즐거움이며, 시내의 바둑판식 도로 위로 반짝이는 불빛을 보며 여행의 마지막 밤을 마무리해보세요.</p>
+			</article>
+			
+			
+		</section>
+
+		<!-- 카드: 추천 달 / 여행 경비 -->
+		<section class="cards">
+
+			<!-- 카드 1: 추천하는 달 + 월별 날씨 -->
+			<div class="card">
+				<div class="card-head">
+					<h3>추천하는 달</h3>
+					<p class="eyebrow">기온 · 옷차림</p>
+				</div>
+
+				<div class="month-ribbon" aria-label="연간 추천 시즌">
+					
+					<div class="m on">1</div>
+					
+					<div class="m on">2</div>
+					
+					<div class="m ">3</div>
+					
+					<div class="m ">4</div>
+					
+					<div class="m ">5</div>
+					
+					<div class="m on">6</div>
+					
+					<div class="m on">7</div>
+					
+					<div class="m on">8</div>
+					
+					<div class="m ">9</div>
+					
+					<div class="m ">10</div>
+					
+					<div class="m ">11</div>
+					
+					<div class="m ">12</div>
+					
+				</div>
+
+				
+				<div class="weather-row">
+					<span class="wm">1월</span>
+					<span class="wt t-freezing">-4°</span>
+					<span class="wo">
+						<span class="ico">🧥</span>두꺼운 패딩 · 목도리 · 장갑<span class="tier">혹한</span>
+					</span>
+				</div>
+				
+				<div class="weather-row">
+					<span class="wm">2월</span>
+					<span class="wt t-freezing">-3°</span>
+					<span class="wo">
+						<span class="ico">🧥</span>두꺼운 패딩 · 목도리 · 장갑<span class="tier">혹한</span>
+					</span>
+				</div>
+				
+				<div class="weather-row">
+					<span class="wm">6월</span>
+					<span class="wt t-chilly">16°</span>
+					<span class="wo">
+						<span class="ico">🧥</span>자켓 · 가디건 · 긴팔<span class="tier">쌀쌀</span>
+					</span>
+				</div>
+				
+				<div class="weather-row">
+					<span class="wm">7월</span>
+					<span class="wt t-mild">20°</span>
+					<span class="wo">
+						<span class="ico">👕</span>얇은 긴팔 · 가벼운 겉옷<span class="tier">선선</span>
+					</span>
+				</div>
+				
+				<div class="weather-row">
+					<span class="wm">8월</span>
+					<span class="wt t-mild">22°</span>
+					<span class="wo">
+						<span class="ico">👕</span>얇은 긴팔 · 가벼운 겉옷<span class="tier">선선</span>
+					</span>
+				</div>
+				
+			</div>
+
+			<!-- 카드 2: 3박 4일 예상 경비 -->
+			<div class="card">
+				<div class="card-head">
+					<h3>3박 4일 예상 경비</h3>
+					<p class="eyebrow">1인 기준</p>
+				</div>
+
+				<div class="budget-bar" aria-hidden="true">
+					<span style="width: 37.1%"></span><span style="width: 25.7%"></span><span style="width: 11.4%"></span><span style="width: 8.6%"></span><span style="width: 17.1%"></span>
+				</div>
+
+				
+				<div class="budget-row">
+					<span class="dot"
+						style="background: var(--teal)"></span>
+					<span class="blabel">숙소<span class="bpct">37.1%</span></span>
+					<span class="bamt">650,000원</span>
+				</div>
+				
+				<div class="budget-row">
+					<span class="dot"
+						style="background: var(--amber)"></span>
+					<span class="blabel">식비<span class="bpct">25.7%</span></span>
+					<span class="bamt">450,000원</span>
+				</div>
+				
+				<div class="budget-row">
+					<span class="dot"
+						style="background: var(--t-freezing)"></span>
+					<span class="blabel">교통<span class="bpct">11.4%</span></span>
+					<span class="bamt">200,000원</span>
+				</div>
+				
+				<div class="budget-row">
+					<span class="dot"
+						style="background: var(--coral)"></span>
+					<span class="blabel">관광·입장료<span class="bpct">8.6%</span></span>
+					<span class="bamt">150,000원</span>
+				</div>
+				
+				<div class="budget-row">
+					<span class="dot"
+						style="background: var(--t-mild)"></span>
+					<span class="blabel">쇼핑·기타<span class="bpct">17.1%</span></span>
+					<span class="bamt">300,000원</span>
+				</div>
+				
+
+				<div class="budget-foot">
+					<span class="lab">합계</span>
+					<span class="sum">1,750,000원</span>
+				</div>
+				<p class="budget-note">※ 항공권 미포함 · 현지 물가 기준 1인 예상치</p>
+			</div>
+
+		</section>
+
+		<footer>
+			<span class="footer">이미지는 unsplash로부터 도움을 받았습니다.</span>
+		</footer>
+
+	</main>
+</body>
+
+</html>

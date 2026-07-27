@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>자카르타 · 여행 아틀라스</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link
+		href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,900&family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap"
+		rel="stylesheet">
+	<style>
+		:root {
+			--paper: #F2ECDD;
+			--paper-2: #EAE2CC;
+			--ink: #16263A;
+			--ink-soft: #44525F;
+			--gray: #888b8e;
+			--line: #CDC3A8;
+			--teal: #0F7A78;
+			--amber: #C77D2A;
+			--coral: #C84B31;
+
+			/* 기온 등급 색 (weather.py의 enum과 1:1 대응) */
+			--t-freezing: #4E73A8;
+			--t-cold: #6BA0C7;
+			--t-chilly: #3E9AA0;
+			--t-mild: #5BA45F;
+			--t-warm: #C77D2A;
+			--t-hot: #C84B31;
+
+			--maxw: 940px;
+		}
+
+		* {
+			box-sizing: border-box;
+		}
+
+		html {
+			scroll-behavior: smooth;
+		}
+
+		body {
+			margin: 0;
+			background-color: var(--paper);
+			/* 종이 질감: 미세한 도트 + 가장자리 비네팅으로 평평한 크림을 탈피 */
+			background-image:
+				radial-gradient(circle at 50% 0%, rgba(255, 255, 255, .5), transparent 60%),
+				radial-gradient(rgba(22, 38, 58, .035) 1px, transparent 1px);
+			background-size: 100% 100%, 22px 22px;
+			color: var(--ink);
+			font-family: "Inter", system-ui, sans-serif;
+			line-height: 1.6;
+			-webkit-font-smoothing: antialiased;
+		}
+
+		.wrap {
+			max-width: var(--maxw);
+			margin: 0 auto;
+			padding: 0 24px;
+		}
+
+		/* ---------- 공통 라벨/구분선 ---------- */
+		.eyebrow {
+			font-family: "Space Mono", monospace;
+			font-size: .72rem;
+			letter-spacing: .28em;
+			text-transform: uppercase;
+			color: var(--teal);
+			margin: 0;
+		}
+
+		.rule {
+			height: 1px;
+			background: repeating-linear-gradient(90deg, var(--line) 0 8px, transparent 8px 14px);
+			border: 0;
+		}
+
+		/* ---------- 히어로 ---------- */
+		.hero {
+			padding: 88px 0 40px;
+		}
+
+		.hero .dateline {
+			display: flex;
+			align-items: center;
+			gap: 14px;
+			margin-bottom: 26px;
+		}
+
+		.hero .dateline .line {
+			flex: 1;
+			height: 1px;
+			background: var(--line);
+		}
+
+		.city-name {
+			font-family: "Fraunces", serif;
+			font-weight: 900;
+			font-size: clamp(3.2rem, 11vw, 7rem);
+			line-height: .92;
+			letter-spacing: -.02em;
+			margin: 0;
+		}
+
+		.tagline {
+			font-family: "Fraunces", serif;
+			font-weight: 400;
+			font-style: italic;
+			font-size: clamp(1.15rem, 3.2vw, 1.6rem);
+			color: var(--ink-soft);
+			max-width: 36ch;
+			margin: 22px 0 0;
+		}
+
+		/* ---------- 본문 단락 (여행지 설명) ---------- */
+		.sections {
+			padding: 30px 0 20px;
+		}
+
+		.stop {
+			padding: 46px 0;
+			border-top: 1px solid var(--line);
+		}
+
+		.stop:first-child {
+			border-top: 0;
+		}
+
+		.stop .stop-no {
+			font-family: "Space Mono", monospace;
+			font-size: .78rem;
+			font-weight: 700;
+			color: var(--coral);
+			letter-spacing: .1em;
+		}
+
+		.stop h2 {
+			font-family: "Fraunces", serif;
+			font-weight: 600;
+			font-size: clamp(1.7rem, 4.4vw, 2.5rem);
+			line-height: 1.1;
+			letter-spacing: -.01em;
+			margin: 6px 0 18px;
+		}
+
+		.stop p {
+			font-size: 1.05rem;
+			color: var(--ink-soft);
+			margin: 0;
+			max-width: 62ch;
+		}
+
+		.stop p+p {
+			margin-top: 1.05em;
+		}
+
+		.stop figure {
+			margin: 0 0 24px;
+		}
+
+		.stop figure img {
+			display: block;
+			width: 100%;
+			height: 320px;
+			object-fit: cover;
+		}
+
+		/* 제목 없는 단락(인터루드): 좌측 액센트 룰만 */
+		.stop.interlude {
+			border-top: 0;
+			padding: 14px 0 14px;
+		}
+
+		.stop.interlude p {
+			border-left: 3px solid var(--teal);
+			padding-left: 18px;
+			font-family: "Fraunces", serif;
+			font-style: italic;
+			font-size: 1.15rem;
+			color: var(--ink);
+			max-width: 56ch;
+		}
+
+		.stop.interlude p+p {
+			margin-top: 1em;
+		}
+
+		/* ---------- 카드 영역 ---------- */
+		.cards {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			gap: 26px;
+			padding: 50px 0 96px;
+		}
+
+		.card {
+			background: var(--paper-2);
+			border: 1px solid var(--ink);
+			box-shadow: 7px 7px 0 rgba(22, 38, 58, .14);
+			padding: 28px 26px;
+		}
+
+		.card-head {
+			display: flex;
+			align-items: baseline;
+			justify-content: space-between;
+			gap: 10px;
+			margin-bottom: 20px;
+		}
+
+		.card-head h3 {
+			font-family: "Inter", sans-serif;
+			font-weight: 700;
+			font-size: 1.3rem;
+			letter-spacing: -.01em;
+			margin: 0;
+		}
+
+		.card-head .eyebrow {
+			font-family: "Inter", sans-serif;
+			font-variant-numeric: tabular-nums;
+			text-transform: none;
+			letter-spacing: .04em;
+			font-size: .78rem;
+			color: var(--ink-soft);
+		}
+
+		/* 추천 월 리본 (1~12) */
+		.month-ribbon {
+			display: grid;
+			grid-template-columns: repeat(12, 1fr);
+			gap: 4px;
+			margin-bottom: 22px;
+		}
+
+		.month-ribbon .m {
+			font-family: "Inter", sans-serif;
+			font-variant-numeric: tabular-nums;
+			font-size: .8rem;
+			text-align: center;
+			padding: 7px 0;
+			color: var(--ink-soft);
+			border: 1px solid transparent;
+			border-radius: 2px;
+		}
+
+		.month-ribbon .m.on {
+			background: var(--ink);
+			color: var(--paper);
+			font-weight: 700;
+		}
+
+		/* 월별 날씨 행 */
+		.weather-row {
+			display: grid;
+			grid-template-columns: 46px 64px 1fr;
+			align-items: center;
+			gap: 12px;
+			padding: 11px 0;
+			border-top: 1px dashed var(--line);
+		}
+
+		.weather-row:first-of-type {
+			border-top: 0;
+		}
+
+		.weather-row .wm {
+			font-family: "Inter", sans-serif;
+			font-variant-numeric: tabular-nums;
+			font-weight: 600;
+			font-size: .92rem;
+		}
+
+		.weather-row .wt {
+			font-family: "Inter", sans-serif;
+			font-variant-numeric: tabular-nums;
+			font-weight: 600;
+			font-size: .95rem;
+			color: #fff;
+			text-align: center;
+			padding: 3px 0;
+			border-radius: 3px;
+		}
+
+		.weather-row .wo {
+			font-size: .92rem;
+			color: var(--ink-soft);
+		}
+
+		.weather-row .wo .ico {
+			margin-right: 6px;
+		}
+
+		.weather-row .wo .tier {
+			font-family: "Inter", sans-serif;
+			font-size: .74rem;
+			color: var(--ink);
+			opacity: .55;
+			margin-left: 6px;
+		}
+
+		.t-freezing {
+			background: var(--t-freezing);
+		}
+
+		.t-cold {
+			background: var(--t-cold);
+		}
+
+		.t-chilly {
+			background: var(--t-chilly);
+		}
+
+		.t-mild {
+			background: var(--t-mild);
+		}
+
+		.t-warm {
+			background: var(--t-warm);
+		}
+
+		.t-hot {
+			background: var(--t-hot);
+		}
+
+		/* 경비 카드 */
+		.budget-total {
+			font-family: "Inter", sans-serif;
+			font-variant-numeric: tabular-nums;
+			font-weight: 600;
+			font-size: 1rem;
+			color: var(--coral);
+		}
+
+		.budget-bar {
+			display: flex;
+			height: 14px;
+			width: 100%;
+			border: 1px solid var(--ink);
+			margin-bottom: 22px;
+			overflow: hidden;
+		}
+
+		.budget-bar span {
+			height: 100%;
+		}
+
+		.budget-bar span:nth-child(6n+1) {
+			background: var(--teal);
+		}
+
+		.budget-bar span:nth-child(6n+2) {
+			background: var(--amber);
+		}
+
+		.budget-bar span:nth-child(6n+3) {
+			background: var(--t-freezing);
+		}
+
+		.budget-bar span:nth-child(6n+4) {
+			background: var(--coral);
+		}
+
+		.budget-bar span:nth-child(6n+5) {
+			background: var(--t-mild);
+		}
+
+		.budget-bar span:nth-child(6n+6) {
+			background: var(--ink-soft);
+		}
+
+		.budget-row {
+			display: grid;
+			grid-template-columns: 14px 1fr auto;
+			align-items: center;
+			gap: 12px;
+			padding: 10px 0;
+			border-top: 1px dashed var(--line);
+		}
+
+		.budget-row:first-of-type {
+			border-top: 0;
+		}
+
+		.budget-row .dot {
+			width: 11px;
+			height: 11px;
+			border-radius: 50%;
+		}
+
+		.budget-row .dot:nth-child(6n+1) {
+			background: var(--teal);
+		}
+
+		.budget-row .blabel {
+			font-size: .98rem;
+		}
+
+		.budget-row .bamt {
+			font-family: "Inter", sans-serif;
+			font-variant-numeric: tabular-nums;
+			font-weight: 600;
+			font-size: .98rem;
+			text-align: right;
+		}
+
+		.budget-row .bpct {
+			font-family: "Inter", sans-serif;
+			font-variant-numeric: tabular-nums;
+			font-size: .72rem;
+			color: var(--ink-soft);
+			margin-left: 8px;
+		}
+
+		.budget-foot {
+			display: flex;
+			justify-content: space-between;
+			align-items: baseline;
+			margin-top: 16px;
+			padding-top: 16px;
+			border-top: 2px solid var(--ink);
+		}
+
+		.budget-foot .lab {
+			font-family: "Inter", sans-serif;
+			font-weight: 600;
+			letter-spacing: .02em;
+			font-size: .9rem;
+			color: var(--ink-soft);
+		}
+
+		.budget-foot .sum {
+			font-family: "Inter", sans-serif;
+			font-variant-numeric: tabular-nums;
+			font-weight: 700;
+			font-size: 1.55rem;
+		}
+
+		.budget-note {
+			font-size: .78rem;
+			color: var(--ink-soft);
+			margin: 14px 0 0;
+		}
+
+		/* 푸터 */
+		footer {
+			border-top: 1px solid var(--line);
+			padding: 16px 0;
+			font-family: "Space Mono", monospace;
+			font-size: .40rem;
+			letter-spacing: .2em;
+			color: var(--gray);
+			text-transform: uppercase;
+		}
+
+		/* ---------- 반응형 ---------- */
+		@media (max-width: 720px) {
+			.cards {
+				grid-template-columns: 1fr;
+				gap: 22px;
+			}
+
+			.hero {
+				padding: 60px 0 30px;
+			}
+
+			.month-ribbon .m {
+				font-size: .6rem;
+				padding: 6px 0;
+			}
+
+			.weather-row {
+				grid-template-columns: 40px 58px 1fr;
+				gap: 9px;
+			}
+
+			.weather-row .wo .tier {
+				display: none;
+			}
+		}
+
+		@media (prefers-reduced-motion: reduce) {
+			html {
+				scroll-behavior: auto;
+			}
+		}
+
+		/* 접근성: 키보드 포커스 */
+		a:focus-visible {
+			outline: 2px solid var(--teal);
+			outline-offset: 3px;
+		}
+	</style>
+</head>
+
+<body>
+	<main class="wrap">
+		<!-- 히어로 -->
+		<header class="hero">
+			<div class="hero-image">
+				<img src="" alt="자카르타" loading="eager"
+					onerror="this.parentElement.style.display='none'">
+			</div>
+
+			<h1 class="city-name">자카르타</h1>
+
+			
+			<p class="tagline">오랜 식민 역사의 흔적과 초현대적 마천루가 어우러져 끊임없이 요동치는 거대하고 뜨거운 메트로폴리스.</p>
+			
+			</div>
+		</header>
+		<hr class="rule">
+
+		<!-- 여행지 설명 단락 -->
+		<section class="sections">
+			
+			
+			<article class="stop">
+				
+				<figure>
+					<img src="https://images.unsplash.com/photo-1663504993665-41da73fd1f5c?q=80&amp;w=2071&amp;auto=format&amp;fit=crop&amp;ixlib=rb-4.1.0&amp;ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="식민지 역사의 발자취, 코타 투아" loading="lazy"
+						onerror="this.closest('figure').style.display='none'">
+				</figure>
+				
+				<div class="stop-no">STOP 01</div>
+				<h2>식민지 역사의 발자취, 코타 투아</h2>
+				<p>자카르타의 구시가지인 코타 투아(Kota Tua)는 과거 네덜란드 동인도 회사의 본거지로, 유럽풍의 붉은 벽돌 건물들이 고스란히 남아 있는 역사적인 장소입니다. 파타힐라 광장을 중심으로 자카르타 역사 박물관과 인형 박물관 등이 자리 잡고 있어 도시의 뿌리를 이해하기 좋습니다.</p><p>광장 주변은 주말이면 현지인들로 가득 차며, 다채로운 색깔의 자전거를 빌려 타고 광장을 가로지르는 것은 이 지역을 즐기는 대표적인 방법입니다. 다만 인파가 매우 많으므로 소지품 보관에 각별히 유의해야 하며, 호객 행위가 있을 수 있으니 가볍게 거절하고 둘러보는 것이 좋습니다.</p><p>해가 질 무렵 코타 투아는 특유의 고풍스러운 조명과 함께 묘한 분위기를 자아냅니다. 근처의 유서 깊은 카페인 &#39;카페 바타비아&#39;에서 차를 한잔하며 창밖으로 보이는 광장의 풍경을 감상하는 것은 자카르타 여행에서 놓치지 말아야 할 우아한 휴식 시간입니다.</p>
+			</article>
+			
+			
+			
+			<article class="stop">
+				
+				<figure>
+					<img src="https://images.unsplash.com/photo-1555043722-4523972f07ee?q=80&amp;w=1974&amp;auto=format&amp;fit=crop&amp;ixlib=rb-4.1.0&amp;ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="현대 인도네시아의 역동적인 중심부" loading="lazy"
+						onerror="this.closest('figure').style.display='none'">
+				</figure>
+				
+				<div class="stop-no">STOP 02</div>
+				<h2>현대 인도네시아의 역동적인 중심부</h2>
+				<p>자카르타는 동남아시아에서 가장 활기찬 도시 중 하나로, 거대한 쇼핑몰과 고층 빌딩이 숲을 이룹니다. 인도네시아 독립 기념비인 모나스(Monas)는 도시 어디에서나 보일 만큼 상징적인 구조물로, 정상 전망대에 오르면 자카르타의 방대한 규모를 한눈에 실감할 수 있습니다.</p><p>도시의 교통은 매우 혼잡하기로 유명하므로, 먼 거리를 이동할 때는 MRT나 택시 애플리케이션인 &#39;고젝&#39; 혹은 &#39;그랩&#39;을 적극적으로 활용하세요. 특히 러시아워 시간대인 오전 7시~9시, 오후 5시~7시 사이에는 이동을 자제하고 가까운 지역 내에서 일정을 소화하는 것이 여행의 피로도를 줄이는 방법입니다.</p><p>자카르타의 현대적인 면모를 보고 싶다면 수디르만(Sudirman) 금융가 주변을 방문해 보세요. 밤이 되면 빌딩들의 화려한 야경이 펼쳐지며, 세련된 루프탑 바가 많아 도심의 바람을 맞으며 인도네시아의 밤을 만끽하기에 더할 나위 없이 좋습니다.</p>
+			</article>
+			
+			
+			
+			<article class="stop">
+				
+				<div class="stop-no">STOP 03</div>
+				<h2>다양한 맛과 문화가 섞인 미식 탐방</h2>
+				<p>자카르타는 인도네시아 전역의 음식을 한데 모아놓은 미식의 수도입니다. 매콤한 볶음밥인 나시 고렝, 꼬치 요리인 사테, 그리고 발효 콩으로 만든 템페 요리는 여행자들의 입맛을 사로잡는 필수 메뉴입니다. 길거리 음식부터 최고급 파인 다이닝까지 선택의 폭이 매우 넓습니다.</p><p>현지 음식을 도전해보고 싶다면 &#39;와룽(Warung)&#39;이라 불리는 소규모 식당을 찾아가 보세요. 단, 위생 상태가 걱정된다면 대형 쇼핑몰 내 푸드코트를 추천합니다. 깔끔한 환경에서 다양한 현지 음식을 시도해볼 수 있어 초심자에게 매우 안전하고 편리한 선택지입니다.</p><p>인도네시아 커피 문화는 세계적으로 유명하며, 자카르타 곳곳에는 품질 좋은 현지 원두를 사용하는 로컬 카페가 많습니다. 식후에는 &#39;루왁 커피&#39;를 비롯한 다양한 커피를 즐기며 느긋하게 시간을 보내보세요. 카페들은 대부분 에어컨이 잘 갖춰져 있어 덥고 습한 오후 시간대를 피하는 최적의 피신처가 되어줄 것입니다.</p>
+			</article>
+			
+			
+		</section>
+
+		<!-- 카드: 추천 달 / 여행 경비 -->
+		<section class="cards">
+
+			<!-- 카드 1: 추천하는 달 + 월별 날씨 -->
+			<div class="card">
+				<div class="card-head">
+					<h3>추천하는 달</h3>
+					<p class="eyebrow">기온 · 옷차림</p>
+				</div>
+
+				<div class="month-ribbon" aria-label="연간 추천 시즌">
+					
+					<div class="m ">1</div>
+					
+					<div class="m ">2</div>
+					
+					<div class="m ">3</div>
+					
+					<div class="m ">4</div>
+					
+					<div class="m on">5</div>
+					
+					<div class="m on">6</div>
+					
+					<div class="m on">7</div>
+					
+					<div class="m on">8</div>
+					
+					<div class="m on">9</div>
+					
+					<div class="m ">10</div>
+					
+					<div class="m ">11</div>
+					
+					<div class="m ">12</div>
+					
+				</div>
+
+				
+				<div class="weather-row">
+					<span class="wm">5월</span>
+					<span class="wt t-hot">29°</span>
+					<span class="wo">
+						<span class="ico">🩳</span>반팔 · 반바지 · 민소매<span class="tier">더움</span>
+					</span>
+				</div>
+				
+				<div class="weather-row">
+					<span class="wm">6월</span>
+					<span class="wt t-hot">29°</span>
+					<span class="wo">
+						<span class="ico">🩳</span>반팔 · 반바지 · 민소매<span class="tier">더움</span>
+					</span>
+				</div>
+				
+				<div class="weather-row">
+					<span class="wm">7월</span>
+					<span class="wt t-hot">29°</span>
+					<span class="wo">
+						<span class="ico">🩳</span>반팔 · 반바지 · 민소매<span class="tier">더움</span>
+					</span>
+				</div>
+				
+				<div class="weather-row">
+					<span class="wm">8월</span>
+					<span class="wt t-hot">30°</span>
+					<span class="wo">
+						<span class="ico">🩳</span>반팔 · 반바지 · 민소매<span class="tier">더움</span>
+					</span>
+				</div>
+				
+				<div class="weather-row">
+					<span class="wm">9월</span>
+					<span class="wt t-hot">30°</span>
+					<span class="wo">
+						<span class="ico">🩳</span>반팔 · 반바지 · 민소매<span class="tier">더움</span>
+					</span>
+				</div>
+				
+			</div>
+
+			<!-- 카드 2: 3박 4일 예상 경비 -->
+			<div class="card">
+				<div class="card-head">
+					<h3>3박 4일 예상 경비</h3>
+					<p class="eyebrow">1인 기준</p>
+				</div>
+
+				<div class="budget-bar" aria-hidden="true">
+					<span style="width: 36.8%"></span><span style="width: 26.3%"></span><span style="width: 10.5%"></span><span style="width: 10.5%"></span><span style="width: 15.8%"></span>
+				</div>
+
+				
+				<div class="budget-row">
+					<span class="dot"
+						style="background: var(--teal)"></span>
+					<span class="blabel">숙소<span class="bpct">36.8%</span></span>
+					<span class="bamt">350,000원</span>
+				</div>
+				
+				<div class="budget-row">
+					<span class="dot"
+						style="background: var(--amber)"></span>
+					<span class="blabel">식비<span class="bpct">26.3%</span></span>
+					<span class="bamt">250,000원</span>
+				</div>
+				
+				<div class="budget-row">
+					<span class="dot"
+						style="background: var(--t-freezing)"></span>
+					<span class="blabel">교통<span class="bpct">10.5%</span></span>
+					<span class="bamt">100,000원</span>
+				</div>
+				
+				<div class="budget-row">
+					<span class="dot"
+						style="background: var(--coral)"></span>
+					<span class="blabel">관광·입장료<span class="bpct">10.5%</span></span>
+					<span class="bamt">100,000원</span>
+				</div>
+				
+				<div class="budget-row">
+					<span class="dot"
+						style="background: var(--t-mild)"></span>
+					<span class="blabel">쇼핑·기타<span class="bpct">15.8%</span></span>
+					<span class="bamt">150,000원</span>
+				</div>
+				
+
+				<div class="budget-foot">
+					<span class="lab">합계</span>
+					<span class="sum">950,000원</span>
+				</div>
+				<p class="budget-note">※ 항공권 미포함 · 현지 물가 기준 1인 예상치</p>
+			</div>
+
+		</section>
+
+		<footer>
+			<span class="footer">이미지는 unsplash로부터 도움을 받았습니다.</span>
+		</footer>
+
+	</main>
+</body>
+
+</html>
